@@ -1,0 +1,15 @@
+sudo: required
+
+language: python
+
+services:
+  - docker
+
+install:
+  - pip install -r requirements.txt
+
+before_script:
+  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+
+script:
+  - python build.py
