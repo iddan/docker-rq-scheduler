@@ -1,7 +1,8 @@
 ARG BASE
-ARG VERSION
 
 FROM ${BASE}
+
+ARG VERSION
 
 RUN pip3 install rq-scheduler==${VERSION}
 
