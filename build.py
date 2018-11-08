@@ -52,27 +52,31 @@ def push(repository, tag, **kwargs):
 
 
 def make_version(version, base):
-    logging.info(f"Building {version} for {base}...")
-
     postfix = "-" + base if base else ""
-    tag = f"{IMAGE}:{version + postfix}"
+    tag = version + postfix
+    fulltag = f"{IMAGE}:{version + postfix}"
     base = f"python:{python_version + postfix}"
+
+    logging.info(f"Building {tag}...")
 
     try:
         image, _ = client.images.build(
-            path=".", tag=tag, buildargs={"VERSION": version, "BASE": base}
+            path=".", tag=fulltag, buildargs={"VERSION": version, "BASE": base}
         )
 
     except BuildError as error:
         logging.error(error)
         return
 
-    logging.info(f"Pushing {version}...")
-    push(IMAGE, version)
+    logging.info(f"Pushing {tag}...")
+
+    push(IMAGE, tag)
 
     if version == latest_version:
-        logging.info("Pushing latest...")
         latest_tag = postfix if postfix else "latest"
+
+        logging.info(f"Pushing {latest_tag}...")
+
         image.tag(IMAGE, latest_tag)
         push(IMAGE, latest_tag)
 
