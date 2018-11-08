@@ -14,16 +14,7 @@ logging.basicConfig(level=logging.INFO)
 
 python_version = "3.6"
 
-bases = {
-    "",
-    "stretch",
-    "slim",
-    "jessie",
-    "slim-jessie",
-    "alpine",
-    "windowsservercore-ltsc2016",
-    "windowsservercore-1709",
-}
+bases = {"", "stretch", "slim", "jessie", "slim-jessie", "alpine"}
 
 
 def get_versions(package):
@@ -33,11 +24,24 @@ def get_versions(package):
     return list(info["releases"].keys())
 
 
+def base_to_postfix(base):
+    return "-" + base if base else ""
+
+
+def base_to_python(base):
+    return f"python:{python_version + base_to_postfix(base)}"
+
+
 logging.info("Fetching versions...")
 versions = get_versions(PACKAGE)
 latest_version = versions[-1]
 
 client = docker.from_env()
+
+
+def pull_base(base):
+    logging.info(f"Pulling {base}")
+    client.images.pull(base_to_python(base))
 
 
 def push(repository, tag, **kwargs):
@@ -53,6 +57,7 @@ def make_version(version, base):
     postfix = "-" + base if base else ""
     tag = f"{IMAGE}:{version + postfix}"
     base = f"python:{python_version + postfix}"
+    
     try:
         image, _ = client.images.build(
             path=".", tag=tag, buildargs={"VERSION": version, "BASE": base}
@@ -74,4 +79,5 @@ def make_version(version, base):
 combinations = [(version, base) for version in versions for base in bases]
 
 with Pool(processes=THREADS) as pool:
+    pool.map(pull_base, bases)
     pool.starmap(make_version, combinations)
