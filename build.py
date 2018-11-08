@@ -1,3 +1,4 @@
+import sys
 import logging
 import os
 import requests
@@ -34,10 +35,14 @@ client = docker.from_env()
 
 for version in missing_versions:
     try:
-        tag = f'{IMAGE}/rq-scheduler:{version}'
+        tag = f'{IMAGE}:{version}'
         logging.info(f"Building {version}...")
+        print(tag)
         client.images.build(path='.', tag=tag, buildargs={'VERSION': version})
         logging.info(f"Pushing {version}...")
-        client.images.push(IMAGE, version)
+        push_output_stream = client.images.push(IMAGE, version, stream=True)
+        for line in push_output_stream:
+            sys.stderr.buffer.write(line + b'\n')       
+
     except BuildError as error:
         logging.error(error)
