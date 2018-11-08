@@ -57,7 +57,7 @@ def make_version(version, base):
     postfix = "-" + base if base else ""
     tag = f"{IMAGE}:{version + postfix}"
     base = f"python:{python_version + postfix}"
-    
+
     try:
         image, _ = client.images.build(
             path=".", tag=tag, buildargs={"VERSION": version, "BASE": base}
@@ -72,8 +72,9 @@ def make_version(version, base):
 
     if version == latest_version:
         logging.info("Pushing latest...")
-        image.tag(IMAGE, "latest")
-        push(IMAGE, "latest")
+        latest_tag = postfix if postfix else "latest"
+        image.tag(IMAGE, latest_tag)
+        push(IMAGE, latest_tag)
 
 
 combinations = [(version, base) for version in versions for base in bases]
