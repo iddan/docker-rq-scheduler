@@ -13,17 +13,16 @@ logging.basicConfig(level=logging.INFO)
 
 python_version = "3.6"
 
-bases = [
+bases = {
     "",
     "stretch",
     "slim",
     "jessie",
     "slim-jessie",
     "alpine",
-    "alpine",
     "windowsservercore-ltsc2016",
     "windowsservercore-1709",
-]
+}
 
 
 def get_versions(package):
