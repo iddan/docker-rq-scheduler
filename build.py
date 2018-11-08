@@ -8,6 +8,7 @@ from docker.errors import BuildError
 
 IMAGE = os.getenv("IMAGE")
 PACKAGE = os.getenv("PACKAGE")
+THREADS = os.getenv("THREADS", 20)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -72,5 +73,5 @@ def make_version(version, base):
 
 combinations = [(version, base) for version in versions for base in bases]
 
-with Pool(processes=len(combinations)) as pool:
+with Pool(processes=THREADS) as pool:
     pool.starmap(make_version, combinations)
