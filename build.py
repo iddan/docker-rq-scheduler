@@ -1,4 +1,3 @@
-import sys
 import logging
 import os
 from multiprocessing.dummy import Pool
@@ -45,10 +44,8 @@ def pull_base(base):
 
 
 def push(repository, tag, **kwargs):
-    push_output_stream = client.images.push(repository, tag, stream=True, **kwargs)
-
-    for line in push_output_stream:
-        sys.stderr.buffer.write(line + b"\n")
+    output = client.images.push(repository, tag, **kwargs)
+    logging.info(output)
 
 
 def make_version(version, base):
@@ -73,7 +70,7 @@ def make_version(version, base):
     push(IMAGE, tag)
 
     if version == latest_version:
-        latest_tag = postfix if postfix else "latest"
+        latest_tag = base if base else "latest"
 
         logging.info(f"Pushing {latest_tag}...")
 
