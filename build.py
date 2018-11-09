@@ -16,6 +16,8 @@ configs = image_builder.get_configs(
     package=PACKAGE, image=IMAGE, bases=bases, python_version=PYTHON_VERSION
 )
 
+configs = list(filter(lambda config: config["version"] not in {"0.1"}, configs))
+
 with Pool(processes=THREADS) as pool:
     pool.map(image_builder.pull_base, bases)
     images = pool.map(image_builder.build, configs)
