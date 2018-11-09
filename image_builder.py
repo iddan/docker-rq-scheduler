@@ -5,10 +5,6 @@ import requests
 import docker
 from docker.errors import BuildError
 
-IMAGE = os.getenv("IMAGE")
-PACKAGE = os.getenv("PACKAGE")
-THREADS = os.getenv("THREADS", 20)
-
 logging.basicConfig(level=logging.INFO)
 
 python_version = "3.6"
@@ -21,13 +17,14 @@ def get_versions(package):
     return list(info["releases"].keys())
 
 
-def _to_config(version, base_name, python_version):
+def _to_config(image, version, base_name, python_version):
     postfix = "-" + base_name if base_name else ""
     tag = version + postfix
-    full_tag = f"{IMAGE}:{version + postfix}"
+    full_tag = f"{image}:{version + postfix}"
     base = f"python:{python_version + postfix}"
 
     return {
+        "image": image,
         "version": version,
         "base_name": base_name,
         "full_tag": full_tag,
@@ -45,7 +42,7 @@ def get_configs(package, image, bases, python_version):
     latest_version = versions[-1]
 
     configs = [
-        _to_config(version, base, python_version)
+        _to_config(image, version, base, python_version)
         for version in versions
         for base in bases
     ]
@@ -99,9 +96,9 @@ def push(config, image):
 
     logging.info(f"Pushing {tag}...")
 
-    _push(IMAGE, tag)
+    _push(config["image"], tag)
 
     for additional_tag in config["additional_tags"]:
         logging.info(f"Pushing {additional_tag}...")
-        image.tag(IMAGE, additional_tag)
-        _push(IMAGE, additional_tag)
+        image.tag(config["image"], additional_tag)
+        _push(config["image"], additional_tag)

@@ -1,4 +1,5 @@
 import os
+import logging
 from multiprocessing.dummy import Pool
 import image_builder
 
@@ -6,6 +7,8 @@ IMAGE = os.getenv("IMAGE")
 PACKAGE = os.getenv("PACKAGE")
 THREADS = os.getenv("THREADS", 20)
 PYTHON_VERSION = "3.6"
+
+logging.basicConfig(level=logging.INFO)
 
 bases = {"", "stretch", "slim", "jessie", "slim-jessie", "alpine"}
 
