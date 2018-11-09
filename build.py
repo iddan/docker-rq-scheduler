@@ -48,8 +48,8 @@ def push(repository, tag, **kwargs):
     logging.info(output)
 
 
-def make_version(version, base):
-    postfix = "-" + base if base else ""
+def make_version(version, base_name):
+    postfix = "-" + base if base_name else ""
     tag = version + postfix
     fulltag = f"{IMAGE}:{version + postfix}"
     base = f"python:{python_version + postfix}"
@@ -70,7 +70,7 @@ def make_version(version, base):
     push(IMAGE, tag)
 
     if version == latest_version:
-        latest_tag = base if base else "latest"
+        latest_tag = base_name if base_name else "latest"
 
         logging.info(f"Pushing {latest_tag}...")
 
