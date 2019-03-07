@@ -2,7 +2,7 @@
 
 # RQ Scheduler Docker Image
 
-Docker Hub: https://hub.docker.com/iddan/rq-scheduler
+Docker Hub: https://hub.docker.com/r/iddan/rq-scheduler
 
 # Simple Tags
 `0.8.3-latest`
